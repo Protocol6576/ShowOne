@@ -69,7 +69,7 @@ webix.ready(function(){
                                                 },
                                                 width: 350,
                                               }).then(function(result){
-                                                webix.ajax().get('createNote').then(function(data) {
+                                                webix.ajax().get('createNote/' + result).then(function(data) {
                                                     data = data.text();
                                                     webix.message(data);
                                                     updapteNoteList();
@@ -101,17 +101,19 @@ webix.ready(function(){
                         // Текстовое поле справа
 
                         rows: [
-                            {
+                            {    
                                 cols: [
                                     {
                                         
                                     },
                                     {
-                                        // Загрузить данные (типо)
+                                        // Загрузить данные
                                         view: 'icon',
                                         icon: 'wxi-download',
                                         click: function() {
-                                            webix.ajax().get('redactNote').then(function(data) {
+                                            var itemId = $$("NotesList").getSelectedItem().title; // Изменить (выглядит ужасно)
+                                            var newText = $$("NoteTextArea").getValue();
+                                            webix.ajax().get('redactNote/' + itemId + '/' + newText).then(function(data) {
                                                 data = data.text();
                                                 webix.message(data);
                                                 updapteNoteList();
@@ -123,6 +125,7 @@ webix.ready(function(){
                             },
                             {
                                 view: 'textarea',
+                                id: 'NoteTextArea',
                                 placeholder: 'Напишите что-то здесь',
                                 
                                 borderless: false,
@@ -149,9 +152,10 @@ webix.ready(function(){
         data:["Переименовать","Удалить",{ $template:"Separator" },"Логи"],
         on:{
             onItemClick: function(id) {
-                var context = this.getContext();
+                var context = this.getContext(); // Зачем так много переменных? ИСПРАВИТЪ!!!
                 var list = context.obj;
                 var listId = context.id;
+                var itemId = list.getItem(listId).title;
 
                 switch (id) {
                     case "Переименовать":
@@ -166,7 +170,7 @@ webix.ready(function(){
                             cancel:"Нет",
                             text:'Вы уверены что хотите удалить "' + list.getItem(listId).title + '"?',
                         }).then(function(result){
-                            webix.ajax().get('deleteNote').then(function(data) {
+                            webix.ajax().get('deleteNote/' + itemId).then(function(data) { // Оптимизировать (Выглядит чет некрасиво)
                                 data = data.text();
                                 webix.message(data);
                                 updapteNoteList();
@@ -199,4 +203,3 @@ webix.ready(function(){
     });
 
 });
-

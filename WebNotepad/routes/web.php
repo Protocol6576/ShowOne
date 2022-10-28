@@ -20,23 +20,29 @@ Route::get('/getNotesList', function() {
     return (getFileNames());
 });
 
-Route::get('/redactNote', function() {
-    return redactNote();
+Route::get('/redactNote/{noteName}/{noteText}', function($noteName, $noteText) {
+    return redactNote($noteName, $noteText);
 });
 
-Route::get('/readNote', function() {
-    return readNote();
+Route::get('/readNote/{noteName}', function($noteName) {
+    return readNote($noteName);
 });
 
-Route::get('/createNote', function() {
-    return createNote();
+Route::get('/createNote/{noteName}', function($noteName) {
+    return createNote($noteName);
 });
 
-Route::get('/deleteNote', function() {
-    return deleteNote();
+Route::get('/deleteNote/{noteName}', function($noteName) {
+    return deleteNote($noteName);
 });
 
+Route::get('/getText/{text}', function($text) {
+    return getText($text);
+});
 
+function getText($text) {
+    return ($text."[eq");
+}
 
 // *** Запросы на сервер для взаимодействия с "заметками" ***
 
@@ -58,25 +64,25 @@ function getFileNames() {
     
 }
 
-function redactNote() {
-    $path = public_path('allNotes/Заметка №11.txt');
+function redactNote($noteName, $noteText) {
+    $path = public_path('allNotes/'.$noteName.'.txt');
     if (File::exists($path)) {
-        File::put($path, "Для детей!");
+        File::put($path, $noteText);
         return "Файл изменен";
     } else {
         return "не существует";
     }
 }
 
-function readNote() {
-    $path = public_path('allNotes/Заметка №11.txt');
+function readNote($noteName) {
+    $path = public_path('allNotes/'.$noteName.'.txt');
     $noteText = File::get($path);
 
     return $noteText;
 }
 
-function createNote() {
-    $path = public_path('allNotes/Заметка №11.txt');
+function createNote($noteName) {
+    $path = public_path('allNotes/'.$noteName.'.txt');
     if (File::exists($path)) {
         return "Файл уже существует";
     } else {
@@ -85,8 +91,8 @@ function createNote() {
     }
 }
 
-function deleteNote() {
-    $path = public_path('allNotes/Заметка №11.txt');
+function deleteNote($noteName) {
+    $path = public_path('allNotes/'.$noteName.'.txt');
     if (File::exists($path)) {
         File::delete($path);
         return "Файл удален";
